@@ -2,25 +2,36 @@ package com.lipisoft.toyshark;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.lipisoft.toyshark.htwgUtil.Connectivity;
 import com.lipisoft.toyshark.util.PacketUtil;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 public class PacketListAdapter extends RecyclerView.Adapter<PacketInfoViewHolder> {
     private static final byte TCP = 6;
     private static final byte UDP = 17;
 
-    @NonNull private final List<Packet> list;
 
-    PacketListAdapter(@NonNull final List<Packet> list) {
+
+    @NonNull private final List<Packet> list;
+    Context context;
+
+    PacketListAdapter(@NonNull final List<Packet> list, Context context) {
         this.list = list;
+        this.context = context;
     }
 
     @Override
@@ -40,6 +51,12 @@ public class PacketListAdapter extends RecyclerView.Adapter<PacketInfoViewHolder
             final TextView protocol = holder.getProtocol();
             final TextView address = holder.getAddress();
             final TextView port = holder.getPort();
+            final TextView length = holder.getLength();
+            final TextView networkType = holder.getNetworkType();
+
+            NetworkInfo networkInfo = Connectivity.getNetworkInfo(context);
+
+            networkType.setText(networkInfo.getTypeName());
 
             time.setText(new Date().toString());
             final byte protocolType = packet.getProtocol();
@@ -50,6 +67,7 @@ public class PacketListAdapter extends RecyclerView.Adapter<PacketInfoViewHolder
             }
             address.setText(PacketUtil.intToIPAddress(packet.getIpHeader().getDestinationIP()));
             port.setText(String.format(Locale.getDefault(), "%d", packet.getDestinationPort()));
+            length.setText(packet.getBuffer().length + " byte");
         }
     }
 

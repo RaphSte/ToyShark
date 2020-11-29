@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 		recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 		recyclerView.setHasFixedSize(true);
 		recyclerView.setLayoutManager(new LinearLayoutManager(this));
-		final PacketListAdapter adapter = new PacketListAdapter(PacketManager.INSTANCE.getList());
+		final PacketListAdapter adapter = new PacketListAdapter(PacketManager.INSTANCE.getList(), getApplicationContext());
 		PacketManager.INSTANCE.setAdapter(adapter);
 		recyclerView.setAdapter(adapter);
 

@@ -9,6 +9,8 @@ public class PacketInfoViewHolder extends RecyclerView.ViewHolder {
     private final TextView protocol;
     private final TextView address;
     private final TextView port;
+    private final TextView length;
+    private final TextView networkType;
 
     PacketInfoViewHolder(View itemView) {
         super(itemView);
@@ -16,6 +18,9 @@ public class PacketInfoViewHolder extends RecyclerView.ViewHolder {
         protocol = itemView.findViewById(R.id.protocol);
         address = itemView.findViewById(R.id.address);
         port = itemView.findViewById(R.id.port);
+        length = itemView.findViewById(R.id.length);
+        networkType = itemView.findViewById(R.id.networkType);
+
     }
 
     public TextView getTime() {
@@ -32,5 +37,12 @@ public class PacketInfoViewHolder extends RecyclerView.ViewHolder {
 
     public TextView getPort() {
         return port;
+    }
+
+    public TextView getLength() {
+        return length;
+    }
+    public TextView getNetworkType() {
+        return networkType;
     }
 }
