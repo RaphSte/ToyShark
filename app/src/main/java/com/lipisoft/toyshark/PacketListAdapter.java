@@ -1,7 +1,6 @@
 package com.lipisoft.toyshark;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.lipisoft.toyshark.database.DatabaseHelper;
+import com.lipisoft.toyshark.database.PacketModel;
 import com.lipisoft.toyshark.htwgUtil.Connectivity;
 import com.lipisoft.toyshark.util.PacketUtil;
 
@@ -43,6 +44,8 @@ public class PacketListAdapter extends RecyclerView.Adapter<PacketInfoViewHolder
     @Override
     public void onBindViewHolder(PacketInfoViewHolder holder, int position) {
         if (holder != null) {
+            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+
             final Packet packet = list.get(position);
             final TextView time = holder.getTime();
             final TextView protocol = holder.getProtocol();
@@ -51,18 +54,34 @@ public class PacketListAdapter extends RecyclerView.Adapter<PacketInfoViewHolder
             final TextView length = holder.getLength();
             final TextView networkType = holder.getNetworkType();
 
-            networkType.setText(Connectivity.getNetworkClass(context));
+            String networkClass = Connectivity.getNetworkClass(context);
+            networkType.setText(networkClass);
+            String timeStamp = new Date().toString();
+            String protocolString;
 
-            time.setText(new Date().toString());
+            time.setText(timeStamp);
             final byte protocolType = packet.getProtocol();
             if (protocolType == TCP) {
                 protocol.setText(R.string.tcp);
+                protocolString = "TCP";
             } else if (protocolType == UDP) {
                 protocol.setText(R.string.udp);
+                protocolString = "UDP";
+            } else {
+                protocolString = "undefined";
             }
-            address.setText(PacketUtil.intToIPAddress(packet.getIpHeader().getDestinationIP()));
+
+            String destinationIp = PacketUtil.intToIPAddress(packet.getIpHeader().getDestinationIP()) + "";
+            String sourceIp = PacketUtil.intToIPAddress(packet.getIpHeader().getSourceIP()) + "";
+            int packageLength = packet.getBuffer().length;
+
+            address.setText(destinationIp);
             port.setText(String.format(Locale.getDefault(), "%d", packet.getDestinationPort()));
-            length.setText(packet.getBuffer().length + " byte");
+            length.setText(packageLength + " byte");
+
+            PacketModel packetModel = new PacketModel(destinationIp, sourceIp, timeStamp, packageLength, networkClass, protocolString);
+            databaseHelper.addData(packetModel);
+
         }
     }
 

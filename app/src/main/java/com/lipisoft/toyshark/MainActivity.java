@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.VpnService;
@@ -34,6 +35,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.lipisoft.toyshark.database.DatabaseHelper;
 
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -42,6 +48,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 	private static String TAG = "MainActivity";
 	private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 0;
+
+
+	DatabaseHelper databaseHelper;
+	private Button dbDataButton;
+	private EditText dbItemCount;
+
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +69,24 @@ public class MainActivity extends AppCompatActivity {
 		PacketManager.INSTANCE.setAdapter(adapter);
 		recyclerView.setAdapter(adapter);
 
+		databaseHelper = new DatabaseHelper(getApplicationContext());
+		dbItemCount = (EditText) findViewById(R.id.dbItemCount);
+		dbDataButton = (Button) findViewById(R.id.GetDBData);
+
 		checkRuntimePermission();
+
+		dbDataButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				Cursor result = databaseHelper.getData();
+				int size = result.getCount();
+				dbItemCount.setText("The current size is: " + size);
+			}
+		});
+
+
+
 	}
 
 	void checkRuntimePermission() {
