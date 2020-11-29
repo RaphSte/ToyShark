@@ -53,6 +53,11 @@ public class Connectivity {
     }
 
     public static String getNetworkClass(Context context) {
+
+        if (isConnectedWifi(context)){
+            return "WIFI";
+        }
+
         TelephonyManager mTelephonyManager = (TelephonyManager)
                 context.getSystemService(Context.TELEPHONY_SERVICE);
         int networkType = mTelephonyManager.getNetworkType();

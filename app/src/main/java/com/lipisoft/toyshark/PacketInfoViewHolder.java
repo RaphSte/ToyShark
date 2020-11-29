@@ -20,7 +20,6 @@ public class PacketInfoViewHolder extends RecyclerView.ViewHolder {
         port = itemView.findViewById(R.id.port);
         length = itemView.findViewById(R.id.length);
         networkType = itemView.findViewById(R.id.networkType);
-
     }
 
     public TextView getTime() {
@@ -42,6 +41,7 @@ public class PacketInfoViewHolder extends RecyclerView.ViewHolder {
     public TextView getLength() {
         return length;
     }
+
     public TextView getNetworkType() {
         return networkType;
     }

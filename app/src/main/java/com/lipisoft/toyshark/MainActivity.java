@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
 				// TODO inform the user to ask runtime permission
 				Log.d(TAG, "explains permission is needed.");
 			} else {
-				ActivityCompat.requestPermissions(this,
-						new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE },
+				ActivityCompat.requestPermissions(this, new String[]{
+								Manifest.permission.WRITE_EXTERNAL_STORAGE },
 						REQUEST_WRITE_EXTERNAL_STORAGE);
 			}
 		} else {
