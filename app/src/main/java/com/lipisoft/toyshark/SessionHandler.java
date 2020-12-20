@@ -222,7 +222,7 @@ class SessionHandler {
 	}
 
 	private void handleDBEntry(Packet packet){
-		DatabaseHelper databaseHelper = new DatabaseHelper(context);
+		DatabaseHelper databaseHelper = MainActivity.staticDatabaseHelper;
 		String protocolString;
 		final byte protocolType = packet.getProtocol();
 		if (protocolType == TCP) {

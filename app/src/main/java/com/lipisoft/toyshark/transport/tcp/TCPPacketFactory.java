@@ -26,6 +26,7 @@ import com.lipisoft.toyshark.PacketManager;
 import com.lipisoft.toyshark.database.DatabaseHelper;
 import com.lipisoft.toyshark.database.PacketModel;
 import com.lipisoft.toyshark.htwgUtil.Connectivity;
+import com.lipisoft.toyshark.htwgUtil.HtwgConstants;
 import com.lipisoft.toyshark.network.ip.IPPacketFactory;
 import com.lipisoft.toyshark.network.ip.IPv4Header;
 import com.lipisoft.toyshark.util.PacketUtil;
@@ -42,8 +43,7 @@ import java.util.Random;
  */
 public class TCPPacketFactory {
 	public static final String TAG = "TCPPacketFactory";
-	private static final byte TCP = 6;
-	private static final byte UDP = 17;
+
 
 
 	private static TCPHeader copyTCPHeader(TCPHeader tcpheader){
@@ -411,9 +411,9 @@ public class TCPPacketFactory {
 		DatabaseHelper databaseHelper = MainActivity.staticDatabaseHelper;
 		String protocolString;
 		final byte protocolType = packet.getProtocol();
-		if (protocolType == TCP) {
+		if (protocolType == HtwgConstants.TCP) {
 			protocolString = "TCP";
-		} else if (protocolType == UDP) {
+		} else if (protocolType == HtwgConstants.UDP) {
 			protocolString = "UDP";
 		} else {
 			protocolString = "undefined";

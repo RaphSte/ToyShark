@@ -1,15 +1,22 @@
 package com.lipisoft.toyshark.transport.udp;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.lipisoft.toyshark.MainActivity;
 import com.lipisoft.toyshark.Packet;
 import com.lipisoft.toyshark.PacketManager;
+import com.lipisoft.toyshark.database.DatabaseHelper;
+import com.lipisoft.toyshark.database.PacketModel;
+import com.lipisoft.toyshark.htwgUtil.HtwgConstants;
 import com.lipisoft.toyshark.network.ip.IPPacketFactory;
 import com.lipisoft.toyshark.network.ip.IPv4Header;
 import com.lipisoft.toyshark.transport.tcp.PacketHeaderException;
 import com.lipisoft.toyshark.util.PacketUtil;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
 
 public class UDPPacketFactory {
 	private static final String TAG = "UDPPacketFactory";
@@ -99,9 +106,36 @@ public class UDPPacketFactory {
 		UDPHeader udpHeader = new UDPHeader(srcPort, destPort, udpLen, checksum);
 
 		PacketManager.INSTANCE.add(new Packet(ipHeader, udpHeader, buffer));
+		handleDBEntry(new Packet(ipHeader, udpHeader, buffer));
 		PacketManager.INSTANCE.getHandler().obtainMessage(PacketManager.PACKET).sendToTarget();
 
 		return buffer;
 	}
-	
+
+
+	private static void handleDBEntry(Packet packet){
+		DatabaseHelper databaseHelper = MainActivity.staticDatabaseHelper;
+		String protocolString;
+		final byte protocolType = packet.getProtocol();
+		if (protocolType == HtwgConstants.TCP) {
+			protocolString = "TCP";
+		} else if (protocolType == HtwgConstants.UDP) {
+			protocolString = "UDP";
+		} else {
+			protocolString = "undefined";
+		}
+		String networkClass = MainActivity.connectivityType;
+		String timeStamp = new Date().toString();
+
+		String destinationIp = PacketUtil.intToIPAddress(packet.getIpHeader().getDestinationIP()) + "";
+		String sourceIp = PacketUtil.intToIPAddress(packet.getIpHeader().getSourceIP()) + "";
+		int packageLength = packet.getBuffer().length;
+
+		PacketModel packetModel = new PacketModel(destinationIp, sourceIp, timeStamp, packageLength, networkClass, protocolString);
+		databaseHelper.addData(packetModel);
+		Log.d("Patrick Out","Write package to destination "+ packetModel.getClientIp() + "from src " +packetModel.getServerIp() + " with " +networkClass);
+	}
+
+
+
 }//end
