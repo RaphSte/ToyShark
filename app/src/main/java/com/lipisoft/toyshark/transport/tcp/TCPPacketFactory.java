@@ -20,8 +20,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
 
+import com.lipisoft.toyshark.MainActivity;
 import com.lipisoft.toyshark.Packet;
 import com.lipisoft.toyshark.PacketManager;
+import com.lipisoft.toyshark.database.DatabaseHelper;
+import com.lipisoft.toyshark.database.PacketModel;
+import com.lipisoft.toyshark.htwgUtil.Connectivity;
 import com.lipisoft.toyshark.network.ip.IPPacketFactory;
 import com.lipisoft.toyshark.network.ip.IPv4Header;
 import com.lipisoft.toyshark.util.PacketUtil;
@@ -38,7 +42,10 @@ import java.util.Random;
  */
 public class TCPPacketFactory {
 	public static final String TAG = "TCPPacketFactory";
-	
+	private static final byte TCP = 6;
+	private static final byte UDP = 17;
+
+
 	private static TCPHeader copyTCPHeader(TCPHeader tcpheader){
 		final TCPHeader tcp = new TCPHeader(tcpheader.getSourcePort(),
 				tcpheader.getDestinationPort(), tcpheader.getSequenceNumber(),
@@ -391,11 +398,40 @@ public class TCPPacketFactory {
 		System.arraycopy(tcpChecksum, 0, buffer,tcpStart + 16, 2);
 
 		PacketManager.INSTANCE.add(new Packet(ipHeader, tcpheader, buffer));
+		handleDBEntry(new Packet(ipHeader, tcpheader, buffer));
 		PacketManager.INSTANCE.getHandler().obtainMessage(PacketManager.PACKET).sendToTarget();
 
 		return buffer;
 	}
-	
+
+
+
+
+	private static void handleDBEntry(Packet packet){
+		DatabaseHelper databaseHelper = MainActivity.staticDatabaseHelper;
+		String protocolString;
+		final byte protocolType = packet.getProtocol();
+		if (protocolType == TCP) {
+			protocolString = "TCP";
+		} else if (protocolType == UDP) {
+			protocolString = "UDP";
+		} else {
+			protocolString = "undefined";
+		}
+		String networkClass = MainActivity.connectivityType;
+		String timeStamp = new Date().toString();
+
+		String destinationIp = PacketUtil.intToIPAddress(packet.getIpHeader().getDestinationIP()) + "";
+		String sourceIp = PacketUtil.intToIPAddress(packet.getIpHeader().getSourceIP()) + "";
+		int packageLength = packet.getBuffer().length;
+
+		PacketModel packetModel = new PacketModel(destinationIp, sourceIp, timeStamp, packageLength, networkClass, protocolString);
+		databaseHelper.addData(packetModel);
+		Log.d("Patrick Out","Write package to destination "+ packetModel.getClientIp() + "from src " +packetModel.getServerIp() + " with " +networkClass);
+	}
+
+
+
 	/**
 	 * create array of byte from a given TCPHeader object
 	 * @param header instance of TCPHeader

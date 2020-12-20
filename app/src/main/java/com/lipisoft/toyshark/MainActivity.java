@@ -40,6 +40,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.lipisoft.toyshark.database.DatabaseHelper;
+import com.lipisoft.toyshark.htwgUtil.Connectivity;
 
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -48,6 +49,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 	private static String TAG = "MainActivity";
 	private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 0;
+	public static DatabaseHelper staticDatabaseHelper;
+	public static String connectivityType = "undefined";
+
 
 	DatabaseHelper databaseHelper;
 	private Button dbDataButton, dbClearButton;
@@ -66,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
 		final PacketListAdapter adapter = new PacketListAdapter(PacketManager.INSTANCE.getList(), getApplicationContext());
 		PacketManager.INSTANCE.setAdapter(adapter);
 		recyclerView.setAdapter(adapter);
+		staticDatabaseHelper = new DatabaseHelper(getApplicationContext());
+		connectivityType = Connectivity.getNetworkClass(getApplicationContext());
 
 		databaseHelper = new DatabaseHelper(getApplicationContext());
 		dbItemCount = (EditText) findViewById(R.id.dbItemCount);

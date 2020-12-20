@@ -27,6 +27,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.lipisoft.toyshark.htwgUtil.Connectivity;
 import com.lipisoft.toyshark.packetRebuild.PCapFileWriter;
 import com.lipisoft.toyshark.socket.IProtectSocket;
 import com.lipisoft.toyshark.socket.IReceivePacket;
@@ -174,6 +175,7 @@ public class ToySharkVPNService extends VpnService implements Handler.Callback,
 		if (pcapOutput != null) {
 			try {
 				pcapOutput.addPacket(packet, 0, packet.length, System.currentTimeMillis() * 1000000);
+				MainActivity.connectivityType = Connectivity.getNetworkClass(getApplicationContext());
 			} catch (IOException e) {
 				Log.e(TAG, "pcapOutput.addPacket IOException :" + e.getMessage());
 				e.printStackTrace();

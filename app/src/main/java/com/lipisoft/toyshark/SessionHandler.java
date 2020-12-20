@@ -214,7 +214,6 @@ class SessionHandler {
 		PacketManager.INSTANCE.getHandler().obtainMessage(PacketManager.PACKET).sendToTarget();
 		handleDBEntry(packet);
 
-
 		if (transportHeader instanceof TCPHeader) {
 			handleTCPPacket(stream, ipHeader, (TCPHeader) transportHeader);
 		} else if (ipHeader.getProtocol() == 17){
@@ -242,7 +241,7 @@ class SessionHandler {
 
 		PacketModel packetModel = new PacketModel(destinationIp, sourceIp, timeStamp, packageLength, networkClass, protocolString);
 		databaseHelper.addData(packetModel);
-		Log.d("Patrick","Write package to db: "+packetModel.toString());
+		Log.d("Patrick In","Write package to destination "+ packetModel.getClientIp() + "from src " +packetModel.getServerIp() + " with " +networkClass);
 	}
 
 	private void sendRstPacket(IPv4Header ip, TCPHeader tcp, int dataLength){
