@@ -18,7 +18,11 @@ package com.lipisoft.toyshark;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Date;
 
+import com.lipisoft.toyshark.database.DatabaseHelper;
+import com.lipisoft.toyshark.database.PacketModel;
+import com.lipisoft.toyshark.htwgUtil.Connectivity;
 import com.lipisoft.toyshark.network.ip.IPPacketFactory;
 import com.lipisoft.toyshark.network.ip.IPv4Header;
 import com.lipisoft.toyshark.socket.SocketData;
@@ -30,7 +34,13 @@ import com.lipisoft.toyshark.transport.udp.UDPHeader;
 import com.lipisoft.toyshark.transport.udp.UDPPacketFactory;
 import com.lipisoft.toyshark.util.PacketUtil;
 
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Application;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.util.Log;
 
 /**
@@ -39,11 +49,21 @@ import android.util.Log;
  * Date: May 22, 2014
  */
 class SessionHandler {
+
+	private static final byte TCP = 6;
+	private static final byte UDP = 17;
+
 	private static final String TAG = "SessionHandler";
 
 	private static final SessionHandler handler = new SessionHandler();
 	private IClientPacketWriter writer;
 	private SocketData packetData;
+
+	private Context context;
+
+	public void setContext(Context context) {
+		this.context = context;
+	}
 
 	public static SessionHandler getInstance(){
 		return handler;
@@ -192,12 +212,37 @@ class SessionHandler {
 		final Packet packet = new Packet(ipHeader, transportHeader, stream.array());
 		PacketManager.INSTANCE.add(packet);
 		PacketManager.INSTANCE.getHandler().obtainMessage(PacketManager.PACKET).sendToTarget();
+		handleDBEntry(packet);
+
 
 		if (transportHeader instanceof TCPHeader) {
 			handleTCPPacket(stream, ipHeader, (TCPHeader) transportHeader);
 		} else if (ipHeader.getProtocol() == 17){
 			handleUDPPacket(stream, ipHeader, (UDPHeader) transportHeader);
 		}
+	}
+
+	private void handleDBEntry(Packet packet){
+		DatabaseHelper databaseHelper = new DatabaseHelper(context);
+		String protocolString;
+		final byte protocolType = packet.getProtocol();
+		if (protocolType == TCP) {
+			protocolString = "TCP";
+		} else if (protocolType == UDP) {
+			protocolString = "UDP";
+		} else {
+			protocolString = "undefined";
+		}
+		String networkClass = Connectivity.getNetworkClass(context);
+		String timeStamp = new Date().toString();
+
+		String destinationIp = PacketUtil.intToIPAddress(packet.getIpHeader().getDestinationIP()) + "";
+		String sourceIp = PacketUtil.intToIPAddress(packet.getIpHeader().getSourceIP()) + "";
+		int packageLength = packet.getBuffer().length;
+
+		PacketModel packetModel = new PacketModel(destinationIp, sourceIp, timeStamp, packageLength, networkClass, protocolString);
+		databaseHelper.addData(packetModel);
+		Log.d("Patrick","Write package to db: "+packetModel.toString());
 	}
 
 	private void sendRstPacket(IPv4Header ip, TCPHeader tcp, int dataLength){

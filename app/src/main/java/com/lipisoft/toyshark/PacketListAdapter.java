@@ -80,7 +80,7 @@ public class PacketListAdapter extends RecyclerView.Adapter<PacketInfoViewHolder
             length.setText(packageLength + " byte");
 
             PacketModel packetModel = new PacketModel(destinationIp, sourceIp, timeStamp, packageLength, networkClass, protocolString);
-            databaseHelper.addData(packetModel);
+            //databaseHelper.addData(packetModel);
 
         }
     }

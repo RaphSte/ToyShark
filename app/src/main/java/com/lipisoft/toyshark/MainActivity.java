@@ -49,11 +49,9 @@ public class MainActivity extends AppCompatActivity {
 	private static String TAG = "MainActivity";
 	private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 0;
 
-
 	DatabaseHelper databaseHelper;
-	private Button dbDataButton;
+	private Button dbDataButton, dbClearButton;
 	private EditText dbItemCount;
-
 
 
 	@Override
@@ -72,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
 		databaseHelper = new DatabaseHelper(getApplicationContext());
 		dbItemCount = (EditText) findViewById(R.id.dbItemCount);
 		dbDataButton = (Button) findViewById(R.id.GetDBData);
+		dbClearButton = (Button) findViewById(R.id.clearDbData);
+
 
 		checkRuntimePermission();
 
@@ -85,6 +85,15 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
+		dbClearButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				databaseHelper.clearDb();
+
+				dbItemCount.setText("DB was cleared");
+			}
+		});
 
 
 	}

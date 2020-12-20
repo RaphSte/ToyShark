@@ -66,6 +66,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void clearDb(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_NAME);
+        db.execSQL("VACUUM");
+    }
+
     /**
      * Returns all the data from database
      *
