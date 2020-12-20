@@ -59,12 +59,6 @@ class SessionHandler {
 	private IClientPacketWriter writer;
 	private SocketData packetData;
 
-	private Context context;
-
-	public void setContext(Context context) {
-		this.context = context;
-	}
-
 	public static SessionHandler getInstance(){
 		return handler;
 	}
@@ -232,7 +226,7 @@ class SessionHandler {
 		} else {
 			protocolString = "undefined";
 		}
-		String networkClass = Connectivity.getNetworkClass(context);
+		String networkClass = MainActivity.connectivityType;
 		String timeStamp = new Date().toString();
 
 		String destinationIp = PacketUtil.intToIPAddress(packet.getIpHeader().getDestinationIP()) + "";
