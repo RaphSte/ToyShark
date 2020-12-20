@@ -409,7 +409,6 @@ public class ToySharkVPNService extends VpnService implements Handler.Callback,
 		IClientPacketWriter clientPacketWriter = new ClientPacketWriterImpl(clientWriter);
 
 		SessionHandler handler = SessionHandler.getInstance();
-		handler.setContext(getApplicationContext());
 		handler.setWriter(clientPacketWriter);
 
 		//background task for non-blocking socket
