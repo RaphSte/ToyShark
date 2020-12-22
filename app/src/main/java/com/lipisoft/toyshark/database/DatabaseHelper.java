@@ -57,7 +57,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, "addData: Adding " + packetModel.toString() + " to " + TABLE_NAME);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
-        db.close();
         //if date as inserted incorrectly it will return -1
         if (result == -1) {
             return false;
@@ -70,7 +69,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_NAME);
         db.execSQL("VACUUM");
-        db.close();
     }
 
     /**
